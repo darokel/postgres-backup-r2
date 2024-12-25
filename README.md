@@ -23,7 +23,10 @@ services:
       S3_BUCKET: my-bucket
       S3_PREFIX: backup
       POSTGRES_HOST: postgres
+      # For single database
       POSTGRES_DATABASE: dbname
+      # For multiple databases
+      #POSTGRES_DATABASE: 'dbname1,dbname2,dbname3'
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
 ```
@@ -34,6 +37,9 @@ services:
 - Run `docker exec <container name> sh backup.sh` to trigger a backup ad-hoc.
 - If `BACKUP_KEEP_DAYS` is set, backups older than this many days will be deleted from S3.
 - Set `S3_ENDPOINT` if you're using a non-AWS S3-compatible storage provider.
+- Multiple databases can be backed up by providing a comma-separated list in `POSTGRES_DATABASE`
+- Each database will be backed up to its own file with format: `{database_name}_{timestamp}.dump`
+- When using `BACKUP_KEEP_DAYS`, old backups are cleaned up per database
 
 ## Restore
 > [!CAUTION]
@@ -41,16 +47,29 @@ services:
 
 ### ... from latest backup
 ```sh
+# Restore all configured databases
 docker exec <container name> sh restore.sh
+
+# Restore a specific database
+docker exec <container name> sh restore.sh "" database-name
 ```
 
 > [!NOTE]
-> If your bucket has more than a 1000 files, the latest may not be restored -- only one S3 `ls` command is used
+> - If your bucket has more than 1000 files, the latest may not be restored -- only one S3 `ls` command is used
+> - When restoring all databases, each database will be restored from its latest backup
+> - Databases must exist before attempting to restore
+> - If a backup is not found for a database, it will be skipped
 
 ### ... from specific backup
 ```sh
+# Restore all databases from a specific timestamp
 docker exec <container name> sh restore.sh <timestamp>
+
+# Restore specific database from a specific timestamp
+docker exec <container name> sh restore.sh <timestamp> <database-name>
 ```
+
+The timestamp parameter should match the timestamp portion of the backup filename (format: YYYY-MM-DDThh:mm:ss).
 
 # Development
 
