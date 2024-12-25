@@ -1,5 +1,5 @@
 # Introduction
-This project provides Docker images to periodically back up a PostgreSQL database to Cloudflare R2, and to restore from the backup as needed.
+This project provides Docker images to periodically back up a PostgreSQL database(s) to S3 like providers, and to restore from the backup as needed.
 
 # Usage
 ## Backup
@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: password
 
   backup:
-    image: darokel/postgres-backup-r2:17
+    image: darokel/postgres-backup-s3:17
     environment:
       SCHEDULE: '@weekly'     # optional
       BACKUP_KEEP_DAYS: 7     # optional
@@ -89,8 +89,9 @@ docker compose up -d
 ```
 
 # Acknowledgements
+
 This project is a fork of [eeshugerman/postgres-backup-s3](https://github.com/eeshugerman/postgres-backup-s3), which itself restructured from the  @schickling's [postgres-backup-s3](https://github.com/schickling/dockerfiles/tree/master/postgres-backup-s3) and [postgres-restore-s3](https://github.com/schickling/dockerfiles/tree/master/postgres-restore-s3). So Kudos to those original authors for all the initial work in this project.
 
 ## Fork goals
 
-Although the original project is compatible with S3 like clients, this fork was largely made to focus on Cloudflare's R2 and supporting multiple database backups (as well as being able to make changes/updates unqique to my needs).
+This fork was largely made to enhance the project by supporting multiple database backups (as well as being able to make changes/updates unqique to my needs).
