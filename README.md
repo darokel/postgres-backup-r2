@@ -1,5 +1,5 @@
 # Introduction
-This project provides Docker images to periodically back up a PostgreSQL database to AWS S3, and to restore from the backup as needed.
+This project provides Docker images to periodically back up a PostgreSQL database to Cloudflare R2, and to restore from the backup as needed.
 
 # Usage
 ## Backup
@@ -53,12 +53,16 @@ docker exec <container name> sh restore.sh <timestamp>
 ```
 
 # Development
+
 ## Build the image locally
-`ALPINE_VERSION` determines Postgres version compatibility. See [`build-and-push-images.yml`](.github/workflows/build-and-push-images.yml) for the latest mapping.
+
+`POSTGRES_VERSION` determines Postgres version.
+
 ```sh
-DOCKER_BUILDKIT=1 docker build --build-arg ALPINE_VERSION=3.14 .
+DOCKER_BUILDKIT=1 docker build --build-arg POSTGRES_VERSION=17 .
 ```
 ## Run a simple test environment with Docker Compose
+
 ```sh
 cp template.env .env
 # fill out your secrets/params in .env
@@ -66,22 +70,8 @@ docker compose up -d
 ```
 
 # Acknowledgements
-This project is a fork and re-structuring of @schickling's [postgres-backup-s3](https://github.com/schickling/dockerfiles/tree/master/postgres-backup-s3) and [postgres-restore-s3](https://github.com/schickling/dockerfiles/tree/master/postgres-restore-s3).
+This project is a fork of [eeshugerman/postgres-backup-s3](https://github.com/eeshugerman/postgres-backup-s3), which itself restructured from the  @schickling's [postgres-backup-s3](https://github.com/schickling/dockerfiles/tree/master/postgres-backup-s3) and [postgres-restore-s3](https://github.com/schickling/dockerfiles/tree/master/postgres-restore-s3). So Kudos to those original authors for all the initial work in this project.
 
 ## Fork goals
-These changes would have been difficult or impossible merge into @schickling's repo or similarly-structured forks.
-  - dedicated repository
-  - automated builds
-  - support multiple PostgreSQL versions
-  - backup and restore with one image
 
-## Other changes and features
-  - some environment variables renamed or removed
-  - uses `pg_dump`'s `custom` format (see [docs](https://www.postgresql.org/docs/10/app-pgdump.html))
-  - drop and re-create all database objects on restore
-  - backup blobs and all schemas by default
-  - no Python 2 dependencies
-  - filter backups on S3 by database name
-  - support encrypted (password-protected) backups
-  - support for restoring from a specific backup by timestamp
-  - support for auto-removal of old backups
+Although the original project is compatible with S3 like clients, this fork was largely made to focus on Cloudflare's R2 and supporting multiple database backups (as well as being able to make changes/updates unqique to my needs).
