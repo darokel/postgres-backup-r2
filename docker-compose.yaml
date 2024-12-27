@@ -27,3 +27,4 @@ services:
       POSTGRES_DATABASE: postgres
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+      WEBHOOK_URL:

@@ -20,7 +20,8 @@ ENV POSTGRES_DATABASE='' \
     S3_S3V4=no \
     SCHEDULE='' \
     PASSPHRASE='' \
-    BACKUP_KEEP_DAYS=''
+    BACKUP_KEEP_DAYS='' \
+    WEBHOOK_URL=''
 
 ADD src/run.sh run.sh
 ADD src/env.sh env.sh

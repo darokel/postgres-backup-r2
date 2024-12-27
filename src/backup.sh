@@ -5,6 +5,20 @@ set -o pipefail
 
 source ./env.sh
 
+send_webhook_notification() {
+    if [ -n "${WEBHOOK_URL:-}" ]; then
+        message="$1"
+        if curl -s -f -X POST \
+            -H 'Content-type: application/json' \
+            --data "{\"text\":\"$message\"}" \
+            "$WEBHOOK_URL" >/dev/null 2>&1; then
+            : # do nothing
+        else
+            echo "Failed to send webhook notification - check WEBHOOK_URL"
+        fi
+    fi
+}
+
 # Split POSTGRES_DATABASE by comma and trim whitespace
 for CURRENT_DB in $(echo $POSTGRES_DATABASE | tr ',' '\n' | sed 's/^ *//g' | sed 's/ *$//g')
 do
@@ -36,6 +50,7 @@ do
     rm "$local_file"
 
     echo "Backup complete for ${CURRENT_DB}."
+    send_webhook_notification "🔒 Finished database backup for ${CURRENT_DB}"
 
     if [ -n "$BACKUP_KEEP_DAYS" ]; then
       sec=$((86400*BACKUP_KEEP_DAYS))

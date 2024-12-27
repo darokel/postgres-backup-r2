@@ -26,9 +26,11 @@ services:
       # For single database
       POSTGRES_DATABASE: dbname
       # For multiple databases
-      #POSTGRES_DATABASE: 'dbname1,dbname2,dbname3'
+      # POSTGRES_DATABASE: 'dbname1,dbname2,dbname3'
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+      # Webhook URL to send notifications to
+      WEBHOOK_URL: https://hooks.slack.com/etc # optional
 ```
 
 - Images are tagged by the major PostgreSQL version supported: `15`, `16` or `17`.
@@ -40,6 +42,7 @@ services:
 - Multiple databases can be backed up by providing a comma-separated list in `POSTGRES_DATABASE`
 - Each database will be backed up to its own file with format: `{database_name}_{timestamp}.dump`
 - When using `BACKUP_KEEP_DAYS`, old backups are cleaned up per database
+- Set `WEBHOOK_URL` to send notifications to a webhook URL, eg Slack channel.
 
 ## Restore
 > [!CAUTION]
